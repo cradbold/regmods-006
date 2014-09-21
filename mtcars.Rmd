@@ -17,16 +17,9 @@ Instead, the only statistically significant parameters -- given the provided dat
 mpg = 39.6863 + (-1.5078)cyl + (-3.1910)wt
 ```
 
-# Context
-
-You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
-
-1. Is an automatic or manual transmission better for MPG?
-2. Quantify the MPG difference between automatic and manual transmissions?
-
 # Exploratory Analysis
 
-We're interested in how data variables affect MPG.  That said, let's take a quick look at the correlations between the other varables and MPG:
+We're interested in how data variables affect MPG.  That said, let's take a quick look at the data & the correlations between the other varables and MPG:
 
 ```{r echo=FALSE}
 library(datasets)
@@ -47,14 +40,14 @@ Analysis of the variance of the predictors as they relate to MPG further identif
 # Linear Regression Model
 
 ```{r echo=FALSE}
-fit1 <- lm(mtcars$mpg ~ cyl + disp + wt, data=subset(mtcars, select=c(cyl, disp, wt)))
+fit1 <- lm(mtcars$mpg ~ cyl + disp + wt, data=subset(mtcars, select=c(mpg, cyl, disp, wt)))
 summary(fit1)$coefficients
 ```
 
 With this model, disp becomes insignificant once again, therefore we reduce the data again and reevaluate:
 
 ```{r echo=FALSE}
-fit2 <- lm(mtcars$mpg ~ cyl + wt, data=subset(mtcars, select=c(cyl, wt)))
+fit2 <- lm(mtcars$mpg ~ cyl + wt, data=subset(mtcars, select=c(mpg, cyl, wt)))
 summary(fit2)$coefficients
 ```
 
@@ -78,6 +71,23 @@ _Unable to quantify this regressors impact because it's insignificant by the cal
 
 # Appendix A
 
+Original context:
+
+You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
+
+1. Is an automatic or manual transmission better for MPG?
+2. Quantify the MPG difference between automatic and manual transmissions?
+
+# Appendix B
+
+Ouput of summary data:
+
+```{r}
+summary(mtcars)
+```
+
+# Appendix C
+
 All code used in this report:
 
 ```{r, eval=FALSE}
@@ -93,3 +103,17 @@ fit2 <- lm(mtcars$mpg ~ cyl + wt, data=subset(mtcars, select=c(cyl, wt)))
 summary(fit2)$coefficients
 plot(resid(fit2) ~ predict(fit2))
 ```
+
+# Appendix D
+
+Confidence interval example:
+
+```{r, eval=FALSE}
+coef <- summary(fit2)$coefficients
+int95cyl <- (coef['cyl', 1] + c(-1, 1) * qt(0.975, df=fit2$df) * coef['cyl', 2]) * 2
+int95wt <- coef['wt', 1] + c(-1, 1) * qt(0.975, df=fit2$df) * coef['wt', 2]
+```
+
+At 95% confidence, for each increase in cylinders (by 2), we find between 1.32 and 4.71 decrease in MPG.
+
+At 95% confidence, for each 1000lb increase weight, we find between 1.64 and 4.74 decrease in MPG.
